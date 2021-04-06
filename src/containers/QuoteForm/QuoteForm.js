@@ -6,6 +6,9 @@ import styled from 'styled-components';
 import Button from 'components/Button/Button';
 import FieldForm from 'components/FieldForm/FieldForm';
 import Checkbox from 'components/Checkbox/Checkbox';
+import ErrorMsgBlock from 'components/ErrorMsg/ErrorMsg';
+import FormBlock from 'components/FormBlock/FormBlock';
+import TextArea from 'components/TextArea/TextArea';
 
 const initialValue = {
   name: '',
@@ -14,11 +17,11 @@ const initialValue = {
   model: '',
   year: '',
   postalCode: '',
-  services: '',
+  services: [],
   message: '',
 };
 
-const phoneRegExp = /^\(?([0-9]{3})\)?[-. ]?([0-9]{4})[-. ]?([0-9]{4})$/;
+const phoneRegExp = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
 
 const validation = Yup.object({
   name: Yup.string().required('Name is required.'),
@@ -29,11 +32,32 @@ const validation = Yup.object({
     .matches(phoneRegExp, 'Invalid mobile.')
     .required('Mobile is required.'),
   model: Yup.string().required('Model is required.'),
-  year: Yup.number().required('Year is required.'),
+  year: Yup.number()
+    .typeError('Year must be a number')
+    .required('Year is required.'),
   postalCode: Yup.string().required('Postal-code is required.'),
-  services: Yup.bool().oneOf([true], 'Services is required.'),
+  services: Yup.array()
+    .min(1, 'Please choose one or more.')
+    .required('Services is required.'),
   message: Yup.string(),
 });
+
+const defaultServices = [
+  'Ceramic Pro',
+  'Paint Protection Film',
+  'Paint Correction',
+  'Detailing',
+  'Window Tinting',
+];
+
+const TITLE = {
+  name: 'Your Name',
+  email: 'Your Email',
+  mobile: 'Phone Number',
+  model: 'Make And Model',
+  year: 'Year',
+  postalCode: 'Postal Code',
+};
 
 const QuoteForm = () => {
   return (
@@ -52,67 +76,45 @@ const QuoteForm = () => {
           <form onSubmit={formik.handleSubmit}>
             <fieldset>
               <legend>Get A Quote</legend>
-              <FieldForm
-                formik={formik}
-                name="name"
-                title="Your Name"
-                type="text"
-                required
-              />
-              <FieldForm
-                formik={formik}
-                name="email"
-                title="Your Email"
-                type="email"
-                required
-              />
-              <FieldForm
-                formik={formik}
-                name="mobile"
-                title="Phone Number"
-                type="text"
-                required
-              />
-              <FieldForm
-                formik={formik}
-                name="model"
-                title="Make And Model"
-                type="text"
-                required
-              />
-              <FieldForm
-                formik={formik}
-                name="year"
-                title="Year"
-                type="text"
-                required
-              />
-              <FieldForm
-                formik={formik}
-                name="postalCode"
-                title="Postal Code"
-                type="text"
-                required
-              />
-              <FieldForm
-                formik={formik}
-                name="services"
-                title="What services are you interested in?"
-                required
+
+              {Object.entries(TITLE).map(([key, value]) => (
+                <FormBlock title={value} required>
+                  <FieldForm
+                    formik={formik}
+                    name={key}
+                    type={key === 'email' ? 'email' : 'text'}
+                  />
+                </FormBlock>
+              ))}
+
+              <FormBlock title="What services are you interested in?" required>
+                {defaultServices.map((name) => (
+                  <Checkbox
+                    formik={formik}
+                    label={`${name}`}
+                    name="services"
+                    value={`${name}`}
+                  />
+                ))}
+
+                {formik.touched.services && formik.errors.services ? (
+                  <ErrorMsgBlock className="field-error">
+                    {formik.errors.services}
+                  </ErrorMsgBlock>
+                ) : null}
+              </FormBlock>
+
+              <FormBlock title="Message">
+                <TextArea formik={formik} name="message" />
+              </FormBlock>
+
+              <Button
+                color="gray"
+                bottom="16%"
+                left="45%"
+                outline
+                disabled={!(formik.isValid && formik.dirty)}
               >
-                <Checkbox label="Ceramic Pro" />
-                <Checkbox label="Paint Protection Film" />
-                <Checkbox label="Paint Correction" />
-                <Checkbox label="Detailing" />
-                <Checkbox label="Window Tinting" />
-              </FieldForm>
-              <FieldForm
-                formik={formik}
-                name="message"
-                title="Message"
-                type="text"
-              />
-              <Button color="blue" bottom="16%" left="47%" outline fullWidth>
                 Submit
               </Button>
             </fieldset>

@@ -1,14 +1,6 @@
-import styled, { css } from 'styled-components';
-import classNames from 'classnames';
-
-const buttonColor = css`
-  background-color: #228be6;
-  color: #f8f9fa;
-
-  &:hover {
-    background: #57a5e9;
-  }
-`;
+import { darken, lighten } from 'polished';
+import styled from 'styled-components';
+import theme from 'styles/theme';
 
 const ButtonBlock = styled.button`
   position: absolute;
@@ -20,8 +12,16 @@ const ButtonBlock = styled.button`
   outline: 0;
   padding: 10px 30px;
   border-radius: 30px;
-  background-color: ${({ color }) => color};
+  background-color: ${({ color }) => theme[color]['background-color']};
+  width: ${({ fullWidth }) => (fullWidth ? '50%' : '200px')};
+  color: ${({ color }) => theme[color].color};
 
+  &:hover {
+    background: ${({ color }) =>
+      lighten(0.1, theme[color]['background-color'])};
+    color: ${({ color }) => darken(0.1, theme[color]['background-color'])};
+    border: ${({ color }) => `1px solid ${color}`};
+  }
   &.small {
     font-size: 13px;
   }
@@ -33,24 +33,11 @@ const ButtonBlock = styled.button`
   &.large {
     font-size: 20px;
   }
-
-  &.blue {
-    ${buttonColor}
-  }
-  &.pink {
-    ${buttonColor}
-  }
-  &.gray {
-    ${buttonColor}
-  }
 `;
 
-const Button = ({ size, color, outline, fullWidth, children, ...rest }) => {
+const Button = ({ size, color, children, ...rest }) => {
   return (
-    <ButtonBlock
-      className={classNames(size, color, { outline, fullWidth })}
-      {...rest}
-    >
+    <ButtonBlock color={color} {...rest}>
       {children}
     </ButtonBlock>
   );

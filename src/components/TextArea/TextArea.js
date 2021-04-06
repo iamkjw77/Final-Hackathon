@@ -1,17 +1,17 @@
+import ErrorMsgBlock from 'components/ErrorMsg/ErrorMsg';
 import styled from 'styled-components';
 
-import ErrorMsgBlock from 'components/ErrorMsg/ErrorMsg';
-
-const FieldForm = ({ formik, name, type, children }) => {
+const TextArea = ({ name, formik }) => {
   return (
-    <Field>
-      <label className="field-label" htmlFor={name}>
-        <input
+    <TextAreaBlock>
+      <label htmlFor={name}>
+        <textarea
+          name={name}
           id={name}
-          className="field-input"
-          type={type}
-          {...formik.getFieldProps(name)}
-        />
+          cols="20"
+          rows="2"
+          onChange={formik.handleChange}
+        ></textarea>
       </label>
 
       {formik.touched[name] && formik.errors[name] ? (
@@ -19,12 +19,12 @@ const FieldForm = ({ formik, name, type, children }) => {
           {formik.errors[name]}
         </ErrorMsgBlock>
       ) : null}
-    </Field>
+    </TextAreaBlock>
   );
 };
 
-const Field = styled.div`
-  .field-input {
+const TextAreaBlock = styled.div`
+  textarea {
     display: block;
     width: 95%;
     margin-top: 10px;
@@ -35,4 +35,4 @@ const Field = styled.div`
   }
 `;
 
-export default FieldForm;
+export default TextArea;

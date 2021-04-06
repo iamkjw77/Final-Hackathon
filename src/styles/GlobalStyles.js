@@ -14,6 +14,10 @@ export const a11yHidden = css`
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
+
+  button[disabled] {
+    cursor: not-allowed;
+  }
 `;
 
 export default GlobalStyles;

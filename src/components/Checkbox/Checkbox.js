@@ -1,9 +1,15 @@
 import styled from 'styled-components';
 
-const Checkbox = ({ label }) => {
+const Checkbox = ({ name, label, formik }) => {
   return (
     <CheckboxBlock>
-      <input id={`ck-${label}`} type="checkbox" />
+      <input
+        id={`ck-${label}`}
+        type="checkbox"
+        name={name}
+        value={label}
+        onChange={formik.handleChange}
+      />
       <label htmlFor={`ck-${label}`}>{label}</label>
     </CheckboxBlock>
   );
